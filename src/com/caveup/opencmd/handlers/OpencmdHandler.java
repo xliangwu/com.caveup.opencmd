@@ -1,10 +1,21 @@
 package com.caveup.opencmd.handlers;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -24,11 +35,47 @@ public class OpencmdHandler extends AbstractHandler {
 	 * from the application context.
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		Runtime rt = Runtime.getRuntime();
-		try {
-			rt.exec(new String[] { "cmd.exe","/c","" });
-		} catch (IOException e) {
-			e.printStackTrace();
+
+		String osName = System.getProperty("os.name");
+
+		if (osName != null && osName.contains("Windows")) {
+			String selectedProjectPath = getSelectedWorkPath(event);
+			Runtime rt = Runtime.getRuntime();
+			try {
+				rt.exec("cmd.exe /c start cmd.exe /K \"cd /d " + selectedProjectPath + "\"");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	private String getSelectedWorkPath(ExecutionEvent event) {
+		String projectDir = getCurrentProject(event);
+		// return default path
+		return projectDir == null ? "C:\\" : projectDir;
+	}
+
+	public String getCurrentProject(ExecutionEvent event) {
+		IProject project = null;
+		ISelectionService selectionService = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService();
+		ISelection selection = selectionService.getSelection();
+		if (selection instanceof IStructuredSelection) {
+			Object element = ((IStructuredSelection) selection).getFirstElement();
+			if (element instanceof IResource) {
+				project = ((IResource) element).getProject();
+			} else if (element instanceof IJavaElement) {
+				IJavaProject jProject = ((IJavaElement) element).getJavaProject();
+				project = jProject.getProject();
+			}
+		}
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		File workspaceDirectory = workspace.getRoot().getLocation().toFile();
+		if (project != null && workspaceDirectory.exists()) {
+			StringBuilder ret = new StringBuilder(workspaceDirectory.getAbsolutePath());
+			ret.append(File.separator);
+			ret.append(project.getName());
+			return ret.toString();
 		}
 		return null;
 	}

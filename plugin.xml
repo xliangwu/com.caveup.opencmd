@@ -13,6 +13,11 @@
             categoryId="com.caveup.opencmd.commands.category"
             id="com.caveup.opencmd.commands.opencmd">
       </command>
+      <command
+            name="openFolder"
+            categoryId="com.caveup.opencmd.commands.category"
+            id="com.caveup.opencmd.commands.openFolder">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -20,41 +25,72 @@
             commandId="com.caveup.opencmd.commands.opencmd"
             class="com.caveup.opencmd.handlers.OpencmdHandler">
       </handler>
+      <handler
+            commandId="com.caveup.opencmd.commands.openFolder"
+            class="com.caveup.opencmd.handlers.OpenFolderHandler">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="com.caveup.opencmd.commands.opencmd"
             contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+6"
+            sequence="M1+4"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+      <key
+            commandId="com.caveup.opencmd.commands.openFolder"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+5"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </key>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
       	<menuContribution locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
-      		<command commandId="com.caveup.opencmd.commands.opencmd"
-        		label="Open CMD" style="push">
-        		<visibleWhen checkEnabled="false">
-               		<with variable="activeMenuSelection">
-                  	<iterate ifEmpty="false" operator="or">
-                     	<adapt type="org.eclipse.core.resources.IResource"></adapt>
-                  	</iterate>
-               	</with>
-            </visibleWhen>
-      		</command>
+      		<menu label="OpenShell" id="com.caveup.opencmd.commands.openShell">
+	      		<command commandId="com.caveup.opencmd.commands.opencmd"
+	        		label="Open CMD" style="push">
+	        		<visibleWhen checkEnabled="false">
+	               		<with variable="activeMenuSelection">
+	                  		<iterate ifEmpty="false" operator="or">
+	                     		<adapt type="org.eclipse.core.resources.IResource"></adapt>
+	                  		</iterate>
+	               		</with>
+	            	</visibleWhen>
+	      		</command>
+	      		<command commandId="com.caveup.opencmd.commands.openFolder"
+	        		label="Open Folder" style="push">
+	        		<visibleWhen checkEnabled="false">
+	               		<with variable="activeMenuSelection">
+	                  		<iterate ifEmpty="false" operator="or">
+	                     		<adapt type="org.eclipse.core.resources.IResource"></adapt>
+	                  		</iterate>
+	               		</with>
+	            	</visibleWhen>
+	      		</command>
+      		</menu>
     	</menuContribution>
       	<menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="com.caveup.opencmd.toolbars.sampleToolbar">
-            <command
-                  commandId="com.caveup.opencmd.commands.opencmd"
-                  icon="icons/cmd.png"
-                  tooltip="Open CMD"
-                  id="com.caveup.opencmd.commands.opencmd">
-            </command>
-         </toolbar>
+	         <toolbar
+	               id="com.caveup.opencmd.toolbars.sampleToolbar">
+	            <command
+	                  commandId="com.caveup.opencmd.commands.opencmd"
+	                  icon="icons/cmd.png"
+	                  tooltip="Open CMD"
+	                  id="com.caveup.opencmd.commands.opencmd">
+	            </command>
+	         </toolbar>
+	         <toolbar
+               	id="com.caveup.openFolder.toolbars.sampleToolbar">
+	            <command
+	                  commandId="com.caveup.opencmd.commands.openFolder"
+	                  icon="icons/opened_folder.png"
+	                  tooltip="Open Folder"
+	                  id="com.caveup.opencmd.commands.openFolder">
+	            </command>
+	         </toolbar>
       	</menuContribution>
    </extension>
 

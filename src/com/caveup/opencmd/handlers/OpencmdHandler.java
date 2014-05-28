@@ -10,12 +10,17 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.PlatformUI;
+
+import com.caveup.opencmd.Activator;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -71,10 +76,12 @@ public class OpencmdHandler extends AbstractHandler {
 		}
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		File workspaceDirectory = workspace.getRoot().getLocation().toFile();
-		if (project != null && workspaceDirectory.exists()) {
+		if (project != null) {
 			StringBuilder ret = new StringBuilder(workspaceDirectory.getAbsolutePath());
 			ret.append(File.separator);
-			ret.append(project.getName());
+			ret.append(project.getFullPath().toFile().getName());
+			ILog log = Activator.getDefault().getLog();
+			log.log(new Status(IStatus.OK, Activator.PLUGIN_ID, 0, ret.toString(), null));
 			return ret.toString();
 		}
 		return null;

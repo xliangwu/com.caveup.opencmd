@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
@@ -80,9 +81,23 @@ public class OpencmdHandler extends AbstractHandler {
 			StringBuilder ret = new StringBuilder(workspaceDirectory.getAbsolutePath());
 			ret.append(File.separator);
 			ret.append(project.getFullPath().toFile().getName());
+
+			IResource resource = (IResource) project.getAdapter(IResource.class);
+			IPath path = resource.getLocation();
+
+			String resourcePath = null;
+			if (path != null) {
+				File file = path.toFile();
+				if (file.isDirectory()) {
+					resourcePath = file.getAbsolutePath();
+				} else {
+					resourcePath = file.getParent();
+				}
+			}
 			ILog log = Activator.getDefault().getLog();
 			log.log(new Status(IStatus.OK, Activator.PLUGIN_ID, 0, ret.toString(), null));
-			return ret.toString();
+			log.log(new Status(IStatus.OK, Activator.PLUGIN_ID, 0, resourcePath, null));
+			return resourcePath;
 		}
 		return null;
 	}
